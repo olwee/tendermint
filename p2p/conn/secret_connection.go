@@ -13,6 +13,13 @@ import (
 	"net"
 	"sync"
 	"time"
+	// Additional
+	"fmt"
+	amino "github.com/tendermint/go-amino"
+	"log"
+	"os"
+	"reflect"
+	// Additional
 
 	"golang.org/x/crypto/chacha20poly1305"
 	"golang.org/x/crypto/curve25519"
@@ -31,6 +38,11 @@ const totalFrameSize = dataMaxSize + dataLenSize
 const aeadSizeOverhead = 16 // overhead of poly 1305 authentication tag
 const aeadKeySize = chacha20poly1305.KeySize
 const aeadNonceSize = chacha20poly1305.NonceSize
+
+// Additional
+var logger = log.New(os.Stdout, "[study-secret-conn]", 1)
+
+// Additional
 
 var (
 	ErrSmallOrderRemotePubKey = errors.New("detected low order point from remote peer")
@@ -76,10 +88,12 @@ type SecretConnection struct {
 // Caller should call conn.Close()
 // See docs/sts-final.pdf for more information.
 func MakeSecretConnection(conn io.ReadWriteCloser, locPrivKey crypto.PrivKey) (*SecretConnection, error) {
+	logger.Println("Making secret connection")
 	locPubKey := locPrivKey.PubKey()
 
 	// Generate ephemeral keys for perfect forward secrecy.
 	locEphPub, locEphPriv := genEphKeys()
+	logger.Println(fmt.Sprintf("Local pubkey  32 Bytes, & is the ptr [%x]", locEphPub))
 
 	// Write local ephemeral pubkey and receive one too.
 	// NOTE: every 32-byte string is accepted as a Curve25519 public key
@@ -90,7 +104,9 @@ func MakeSecretConnection(conn io.ReadWriteCloser, locPrivKey crypto.PrivKey) (*
 	}
 
 	// Sort by lexical order.
+	logger.Println(fmt.Sprintf("Remote pubkey  32 Bytes, & is the ptr [%x]", remEphPub))
 	loEphPub, _ := sort32(locEphPub, remEphPub)
+	logger.Println(fmt.Sprintf("Lexicon order lower pubkey: [%x]", loEphPub))
 
 	// Check if the local ephemeral public key
 	// was the least, lexicographically sorted.
@@ -267,6 +283,16 @@ func shareEphPubKey(conn io.ReadWriteCloser, locEphPub *[32]byte) (remEphPub *[3
 	// Send our pubkey and receive theirs in tandem.
 	var trs, _ = cmn.Parallel(
 		func(_ int) (val interface{}, err error, abort bool) {
+			// Additional
+			// conn: io.Writer
+			// o : interface
+			var rv = reflect.ValueOf(locEphPub)
+			fmt.Printf("rv: %s \n", rv)
+			fmt.Printf("rvType: %s \n", rv.Type())
+			info, err := cdc.getTypeInfo_wlock(rv.Type())
+
+			fmt.Printf("rvTypeKind: %s \n", info.Type.Kind())
+			// Additional
 			var _, err1 = cdc.MarshalBinaryLengthPrefixedWriter(conn, locEphPub)
 			if err1 != nil {
 				return nil, err1, true // abort

@@ -1,0 +1,73 @@
+=============== Aug 2, 2019 (BST) ===============
+05:49:17.142973 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+05:49:17.144702 db@open opening
+05:49:17.144860 version@stat F·[] S·0B[] Sc·[]
+05:49:17.145893 db@janitor F·2 G·0
+05:49:17.145904 db@open done T·1.192103ms
+=============== Aug 2, 2019 (BST) ===============
+05:51:21.711779 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+05:51:21.711873 version@stat F·[] S·0B[] Sc·[]
+05:51:21.711886 db@open opening
+05:51:21.711913 journal@recovery F·1
+05:51:21.712181 journal@recovery recovering @1
+05:51:21.713203 memdb@flush created L0@2 N·45 S·2KiB "abc..y:1,v14":"val..y:9,v39"
+05:51:21.714699 version@stat F·[1] S·2KiB[2KiB] Sc·[0.25]
+05:51:21.717584 db@janitor F·3 G·0
+05:51:21.717596 db@open done T·5.706259ms
+=============== Aug 2, 2019 (BST) ===============
+06:01:30.098430 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+06:01:30.098514 version@stat F·[1] S·2KiB[2KiB] Sc·[0.25]
+06:01:30.098527 db@open opening
+06:01:30.098556 journal@recovery F·1
+06:01:30.098779 journal@recovery recovering @3
+06:01:30.099736 memdb@flush created L0@5 N·24 S·1KiB "abc..:10,v51":"val..:16,v68"
+06:01:30.101271 version@stat F·[2] S·3KiB[3KiB] Sc·[0.50]
+06:01:30.104295 db@janitor F·4 G·0
+06:01:30.104326 db@open done T·5.795594ms
+=============== Aug 2, 2019 (BST) ===============
+06:01:50.016620 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+06:01:50.017078 version@stat F·[2] S·3KiB[3KiB] Sc·[0.50]
+06:01:50.017155 db@open opening
+06:01:50.017352 journal@recovery F·1
+06:01:50.018672 journal@recovery recovering @6
+06:01:50.021215 memdb@flush created L0@8 N·4 S·474B "abc..:15,v72":"val..:17,v73"
+06:01:50.027408 version@stat F·[3] S·3KiB[3KiB] Sc·[0.75]
+06:01:50.032467 db@janitor F·5 G·0
+06:01:50.032511 db@open done T·15.33798ms
+=============== Aug 2, 2019 (BST) ===============
+06:08:53.829206 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+06:08:53.829342 version@stat F·[3] S·3KiB[3KiB] Sc·[0.75]
+06:08:53.829359 db@open opening
+06:08:53.829405 journal@recovery F·1
+06:08:53.829660 journal@recovery recovering @9
+06:08:53.830713 memdb@flush created L0@11 N·8 S·622B "abc..:16,v77":"val..:19,v82"
+06:08:53.832528 version@stat F·[4] S·4KiB[4KiB] Sc·[1.00]
+06:08:53.835234 db@janitor F·6 G·0
+06:08:53.835247 db@open done T·5.883971ms
+06:08:53.835317 table@compaction L0·4 -> L1·0 S·4KiB Q·85
+06:08:53.836455 table@build created L1@14 N·56 S·1KiB "abc..y:1,v14":"val..y:9,v39"
+06:08:53.836520 version@stat F·[0 1] S·1KiB[0B 1KiB] Sc·[0.00 0.00]
+06:08:53.837285 table@compaction committed F-3 S-3KiB Ke·0 D·25 T·1.945465ms
+06:08:53.837354 table@remove removed @8
+06:08:53.837384 table@remove removed @5
+06:08:53.837548 table@remove removed @2
+=============== Aug 2, 2019 (BST) ===============
+06:11:37.584746 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+06:11:37.585160 version@stat F·[0 1] S·1KiB[0B 1KiB] Sc·[0.00 0.00]
+06:11:37.585175 db@open opening
+06:11:37.585209 journal@recovery F·1
+06:11:37.585403 journal@recovery recovering @12
+06:11:37.585728 version@stat F·[0 1] S·1KiB[0B 1KiB] Sc·[0.00 0.00]
+06:11:37.588711 db@janitor F·4 G·1
+06:11:37.588717 db@janitor removing table-11
+06:11:37.588741 db@open done T·3.562562ms
+=============== Aug 2, 2019 (BST) ===============
+06:18:25.789176 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+06:18:25.789266 version@stat F·[0 1] S·1KiB[0B 1KiB] Sc·[0.00 0.00]
+06:18:25.789279 db@open opening
+06:18:25.789314 journal@recovery F·1
+06:18:25.789504 journal@recovery recovering @15
+06:18:25.790840 memdb@flush created L0@17 N·76 S·3KiB "abc..:18,v86":"val..:38,v159"
+06:18:25.792181 version@stat F·[1 1] S·4KiB[3KiB 1KiB] Sc·[0.25 0.00]
+06:18:25.794574 db@janitor F·4 G·0
+06:18:25.794590 db@open done T·5.30587ms
