@@ -15,7 +15,6 @@ import (
 	"time"
 	// Additional
 	"fmt"
-	amino "github.com/tendermint/go-amino"
 	"log"
 	"os"
 	"reflect"
@@ -89,10 +88,13 @@ type SecretConnection struct {
 // See docs/sts-final.pdf for more information.
 func MakeSecretConnection(conn io.ReadWriteCloser, locPrivKey crypto.PrivKey) (*SecretConnection, error) {
 	logger.Println("Making secret connection")
+	logger.Println(fmt.Sprintf("Local Persistent Private Key [%x]", locPrivKey.Bytes()))
 	locPubKey := locPrivKey.PubKey()
+	logger.Println(fmt.Sprintf("Local Persistent Public Key [%x]", locPubKey.Bytes()))
 
 	// Generate ephemeral keys for perfect forward secrecy.
 	locEphPub, locEphPriv := genEphKeys()
+	logger.Println(fmt.Sprintf("Local privatekey, & is the ptr [%x]", locEphPriv))
 	logger.Println(fmt.Sprintf("Local pubkey  32 Bytes, & is the ptr [%x]", locEphPub))
 
 	// Write local ephemeral pubkey and receive one too.
@@ -114,12 +116,16 @@ func MakeSecretConnection(conn io.ReadWriteCloser, locPrivKey crypto.PrivKey) (*
 
 	// Compute common diffie hellman secret using X25519.
 	dhSecret, err := computeDHSecret(remEphPub, locEphPriv)
+	logger.Println(fmt.Sprintf("Common Diffie Hellman Secret: [%x]", dhSecret))
 	if err != nil {
 		return nil, err
 	}
 
 	// generate the secret used for receiving, sending, challenge via hkdf-sha2 on dhSecret
 	recvSecret, sendSecret, challenge := deriveSecretAndChallenge(dhSecret, locIsLeast)
+	logger.Println(fmt.Sprintf("Recv Secret: [%x]", recvSecret))
+	logger.Println(fmt.Sprintf("Send Secret: [%x]", sendSecret))
+	logger.Println(fmt.Sprintf("Challenge: [%x]", challenge))
 
 	sendAead, err := chacha20poly1305.New(sendSecret[:])
 	if err != nil {
@@ -141,6 +147,7 @@ func MakeSecretConnection(conn io.ReadWriteCloser, locPrivKey crypto.PrivKey) (*
 
 	// Sign the challenge bytes for authentication.
 	locSignature := signChallenge(challenge, locPrivKey)
+	logger.Println(fmt.Sprintf("Signed Challenge Local Signature: [%x]", locSignature))
 
 	// Share (in secret) each other's pubkey & challenge signature
 	authSigMsg, err := shareAuthSignature(sc, locPubKey, locSignature)
@@ -149,9 +156,14 @@ func MakeSecretConnection(conn io.ReadWriteCloser, locPrivKey crypto.PrivKey) (*
 	}
 
 	remPubKey, remSignature := authSigMsg.Key, authSigMsg.Sig
+	logger.Println(fmt.Sprintf("AuthSigMsg -> remPubKey: [%x]", remPubKey))
+	logger.Println(fmt.Sprintf("AuthSigMsg -> remSignature: [%x]", remSignature))
+
 	if !remPubKey.VerifyBytes(challenge[:], remSignature) {
 		return nil, errors.New("Challenge verification failed")
 	}
+
+	logger.Println("Authorization Done")
 
 	// We've authorized.
 	sc.remPubKey = remPubKey
@@ -168,6 +180,7 @@ func (sc *SecretConnection) RemotePubKey() crypto.PubKey {
 func (sc *SecretConnection) Write(data []byte) (n int, err error) {
 	sc.sendMtx.Lock()
 	defer sc.sendMtx.Unlock()
+	logger.Println(fmt.Sprintf("SecretConnection Write: [%x]", data))
 
 	for 0 < len(data) {
 		if err := func() error {
@@ -193,6 +206,7 @@ func (sc *SecretConnection) Write(data []byte) (n int, err error) {
 			sc.sendAead.Seal(sealedFrame[:0], sc.sendNonce[:], frame, nil)
 			incrNonce(sc.sendNonce)
 			// end encryption
+			logger.Println(fmt.Sprintf("Seal Frame: [%x]", sealedFrame))
 
 			_, err = sc.conn.Write(sealedFrame)
 			if err != nil {
@@ -289,9 +303,6 @@ func shareEphPubKey(conn io.ReadWriteCloser, locEphPub *[32]byte) (remEphPub *[3
 			var rv = reflect.ValueOf(locEphPub)
 			fmt.Printf("rv: %s \n", rv)
 			fmt.Printf("rvType: %s \n", rv.Type())
-			info, err := cdc.getTypeInfo_wlock(rv.Type())
-
-			fmt.Printf("rvTypeKind: %s \n", info.Type.Kind())
 			// Additional
 			var _, err1 = cdc.MarshalBinaryLengthPrefixedWriter(conn, locEphPub)
 			if err1 != nil {
